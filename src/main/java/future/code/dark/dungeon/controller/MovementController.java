@@ -21,10 +21,10 @@ public class MovementController extends KeyAdapter {
     @Override
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
-            case KeyEvent.VK_W -> player.move(UP);
-            case KeyEvent.VK_S -> player.move(DOWN);
-            case KeyEvent.VK_A -> player.move(LEFT);
-            case KeyEvent.VK_D -> player.move(RIGHT);
+            case KeyEvent.VK_UP, KeyEvent.VK_W -> player.move(UP);
+            case KeyEvent.VK_DOWN, KeyEvent.VK_S -> player.move(DOWN);
+            case KeyEvent.VK_LEFT, KeyEvent.VK_A -> player.move(LEFT);
+            case KeyEvent.VK_RIGHT, KeyEvent.VK_D -> player.move(RIGHT);
         }
     }
 

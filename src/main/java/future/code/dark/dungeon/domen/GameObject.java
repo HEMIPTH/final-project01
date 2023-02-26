@@ -15,7 +15,6 @@ public abstract class GameObject {
     public GameObject(int xPosition, int yPosition, String imagePath) {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
-
         this.image = new ImageIcon(imagePath).getImage();
     }
 

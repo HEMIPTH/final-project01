@@ -31,7 +31,9 @@ public abstract class DynamicObject extends GameObject {
     }
 
     private Boolean isAllowedSurface(int x, int y) {
-        return GameMaster.getInstance().getMap().getMap()[y][x] != Configuration.WALL_CHARACTER;
+        return GameMaster.getInstance().getMap().getMap()[y][x] != Configuration.WALL_CHARACTER &&
+                (GameMaster.getInstance().getMap().getMap()[y][x] != Configuration.EXIT_CHARACTER ||
+                GameMaster.getInstance().canExit());
     }
 
 }

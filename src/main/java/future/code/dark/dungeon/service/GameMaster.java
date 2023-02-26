@@ -9,26 +9,29 @@ import future.code.dark.dungeon.domen.GameObject;
 import future.code.dark.dungeon.domen.Map;
 import future.code.dark.dungeon.domen.Player;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import javax.swing.*;
+import java.awt.*;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static future.code.dark.dungeon.config.Configuration.COIN_CHARACTER;
-import static future.code.dark.dungeon.config.Configuration.ENEMIES_ACTIVE;
-import static future.code.dark.dungeon.config.Configuration.ENEMY_CHARACTER;
-import static future.code.dark.dungeon.config.Configuration.EXIT_CHARACTER;
-import static future.code.dark.dungeon.config.Configuration.PLAYER_CHARACTER;
+import static future.code.dark.dungeon.config.Configuration.*;
 
 public class GameMaster {
+
+    private final Image victoryImage;
+
+    private boolean won = false;
 
     private static GameMaster instance;
 
     private final Map map;
     private final List<GameObject> gameObjects;
+
+    private final int totalCoins;
 
     public static synchronized GameMaster getInstance() {
         if (instance == null) {
@@ -41,8 +44,23 @@ public class GameMaster {
         try {
             this.map = new Map(Configuration.MAP_FILE_PATH);
             this.gameObjects = initGameObjects(map.getMap());
+            this.totalCoins = getCoins().size();
+            this.victoryImage = new ImageIcon(VICTORY_SPRITE).getImage();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void act(int x, int y) {
+        Optional<GameObject> currentObject = gameObjects.stream()
+                .filter(gameObject -> gameObject.getXPosition() == x && gameObject.getYPosition() == y)
+                .findFirst();
+        if (currentObject.isPresent()) {
+            if (currentObject.get() instanceof Coin) {
+                gameObjects.remove(currentObject.get());
+            } else if (currentObject.get() instanceof Exit) {
+                this.won = true;
+            }
         }
     }
 
@@ -72,6 +90,12 @@ public class GameMaster {
         getPlayer().render(graphics);
         graphics.setColor(Color.WHITE);
         graphics.drawString(getPlayer().toString(), 10, 20);
+        int picked = totalCoins - getCoins().size();
+        String score = picked + " | " + getCoins().size();
+        graphics.drawString(score, 10, 50);
+        if (won) {
+            graphics.drawImage(victoryImage, 0, 0, null);
+        }
     }
 
     public Player getPlayer() {
@@ -94,8 +118,19 @@ public class GameMaster {
                 .collect(Collectors.toList());
     }
 
+    private List<Coin> getCoins() {
+        return gameObjects.stream()
+                .filter(gameObject -> gameObject instanceof Coin)
+                .map(gameObject -> (Coin) gameObject)
+                .collect(Collectors.toList());
+    }
+
+
     public Map getMap() {
         return map;
     }
 
+    public boolean canExit() {
+        return getCoins().size() == 0;
+    }
 }

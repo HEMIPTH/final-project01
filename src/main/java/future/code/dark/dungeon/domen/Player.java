@@ -1,6 +1,7 @@
 package future.code.dark.dungeon.domen;
 
 import future.code.dark.dungeon.config.Configuration;
+import future.code.dark.dungeon.service.GameMaster;
 
 public class Player extends DynamicObject {
     private static final int stepSize = 1;
@@ -11,6 +12,7 @@ public class Player extends DynamicObject {
 
     public void move(Direction direction) {
         super.move(direction, stepSize);
+        GameMaster.getInstance().act(xPosition, yPosition);
     }
 
     @Override
